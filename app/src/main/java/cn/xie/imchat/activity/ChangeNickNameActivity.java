@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -64,7 +63,6 @@ public class ChangeNickNameActivity extends BaseActivity {
             return;
         }
         LoginUser loginUser = Util.getLoginInfo(context);
-        Log.e("xjbo","修改昵称");
         boolean result = XmppConnection.getConnection().modifyNickName(inputNickname.getText().toString(),loginUser.getUserName(),loginUser.getUserName());
         if (result){
             Toast.makeText(context,"修改成功",Toast.LENGTH_SHORT).show();

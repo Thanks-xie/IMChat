@@ -6,12 +6,17 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -287,5 +292,23 @@ public class Util {
         final float scale = context.getResources().getDisplayMetrics().density;
         return (int) (pxValue / scale + 0.5f);
     }
+
+    // InputStream转换成Drawable
+    public static Drawable InputStream2Drawable(InputStream is) {
+        Bitmap bitmap = InputStream2Bitmap(is);
+        return bitmap2Drawable(bitmap);
+    }
+
+    // 将InputStream转换成Bitmap
+    public static Bitmap InputStream2Bitmap(InputStream is) {
+        return BitmapFactory.decodeStream(is);
+    }
+    // Bitmap转换成Drawable
+    public static Drawable bitmap2Drawable(Bitmap bitmap) {
+        BitmapDrawable bd = new BitmapDrawable(bitmap);
+        Drawable d = (Drawable) bd;
+        return d;
+    }
+
 
 }

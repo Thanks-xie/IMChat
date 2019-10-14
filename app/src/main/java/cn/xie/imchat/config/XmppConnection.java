@@ -1,10 +1,9 @@
 package cn.xie.imchat.config;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.util.Log;
-
-import com.alibaba.fastjson.JSON;
 
 import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.ConnectionListener;
@@ -18,6 +17,7 @@ import org.jivesoftware.smack.chat2.ChatManager;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Presence;
+import org.jivesoftware.smack.provider.ProviderManager;
 import org.jivesoftware.smack.roster.Roster;
 import org.jivesoftware.smack.roster.RosterEntry;
 import org.jivesoftware.smack.roster.RosterGroup;
@@ -46,6 +46,7 @@ import org.jxmpp.jid.parts.Localpart;
 import org.jxmpp.jid.parts.Resourcepart;
 import org.jxmpp.stringprep.XmppStringprepException;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
@@ -438,7 +439,7 @@ public class XmppConnection extends XMPPTCPConnection {
      * @param user user
      * @return Drawable
      */
-   /* public Drawable getUserImage(String user) {
+    public Drawable getUserImage(String user) {
         if (getConnection() == null)
         {
             return null;
@@ -453,8 +454,7 @@ public class XmppConnection extends XMPPTCPConnection {
                 return null;
             }
             try {
-                VCardManager.getInstanceFor(getConnection()).loadVCard(
-                        JidCreate.entityBareFrom(user + "@" + getConnection().getXMPPServiceDomain()));
+                VCardManager.getInstanceFor(getConnection()).loadVCard(JidCreate.entityBareFrom(user));
             } catch (XmppStringprepException | SmackException | InterruptedException | XMPPException.XMPPErrorException e) {
                 e.printStackTrace();
             }
@@ -468,8 +468,8 @@ public class XmppConnection extends XMPPTCPConnection {
             e.printStackTrace();
             return null;
         }
-        return FormatTools.getInstance().InputStream2Drawable(bais);
-    }*/
+        return Util.InputStream2Drawable(bais);
+    }
 
     /**
      * 创建一个群

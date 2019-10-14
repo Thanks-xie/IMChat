@@ -2,8 +2,10 @@ package cn.xie.imchat.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -53,7 +55,11 @@ public class ContractsAdapter extends RecyclerView.Adapter<ContractsAdapter.View
         Message msg = new Message();
         msg.what = position;
         msg.obj = holder;
-        showOnline.sendMessage(msg);
+        showHeadImage.sendMessage(msg);
+        Message msg1 = new Message();
+        msg1.what = position;
+        msg1.obj = holder;
+        showOnline.sendMessage(msg1);
     }
 
     @Override
@@ -94,5 +100,23 @@ public class ContractsAdapter extends RecyclerView.Adapter<ContractsAdapter.View
             }
         }
     };
+    /**
+     * 获取好友在线状态
+     */
+    @SuppressLint("HandlerLeak")
+    private Handler showHeadImage = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            Drawable drawable = XmppConnection.getInstance().getUserImage(chatUserList.get(msg.what).getJid());
+            ViewHolder viewHolder = (ViewHolder) msg.obj;
+            Log.e("xjbo","drawable："+drawable);
+            /*if (drawable!=null){
+                viewHolder.online.setText(R.string.online_text);
+            }else {
+                viewHolder.online.setText(R.string.offline_text);
+            }*/
+        }
+    };
+
 
 }
