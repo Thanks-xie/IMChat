@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".activity.AddFriendActivity">
+
+    <!--顶部标题-->
+    <RelativeLayout
+        android:id="@+id/title"
+        style="@style/HeadRelativeLayout">
+
+        <ImageView
+            android:id="@+id/back"
+            android:layout_centerVertical="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@mipmap/back"
+            android:layout_marginLeft="10dp"/>
+
+       <TextView
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:text="@string/add_friend"
+           android:textColor="@android:color/white"
+           android:layout_centerVertical="true"
+           android:layout_centerInParent="true"/>
+
+    </RelativeLayout>
+    <!-- TODO: Update blank fragment layout -->
+    <RelativeLayout
+        android:layout_gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="45dp">
+        <TextView
+            android:id="@+id/search_commit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/search_text"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="10dp"/>
+        <EditText
+            android:layout_marginRight="10dp"
+            android:layout_toLeftOf="@+id/search_commit"
+            android:id="@+id/search"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:singleLine="true"
+            android:background="@drawable/serach_style"
+            android:drawableLeft="@mipmap/search"
+            android:textColor="@android:color/holo_blue_light"
+            android:paddingLeft="10dp"
+            android:layout_centerVertical="true"
+            android:hint="@string/add_name"/>
+
+    </RelativeLayout>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_search"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="10dp"/>
+
+</LinearLayout>

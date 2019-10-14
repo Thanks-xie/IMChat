@@ -1,0 +1,21 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+    <style name="NoTitleBar" parent="android:Theme.Light">
+    </style>
+
+    <!-- 菜单页头部RelativeLayout -->
+    <style name="HeadRelativeLayout">
+    <item name="android:layout_width">match_parent</item>
+    <item name="android:layout_height">44dp</item>
+    <item name="android:background">@android:color/holo_blue_light</item>
+    <item name="android:paddingRight">2dp</item>
+    </style>
+
+</resources>

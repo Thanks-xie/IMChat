@@ -1,0 +1,52 @@
+package cn.xie.imchat.view;
+
+import android.content.Context;
+import android.util.AttributeSet;
+import android.view.KeyEvent;
+import android.widget.EditText;
+
+/**
+ * 拦截键盘向下的 EditTextView
+ *
+ * @author xiejinbo
+ * @date 2019/9/29 0029 13:44
+ */
+public class MyEditTextView extends EditText {
+
+    public MyEditTextView(Context context) {
+        super(context);
+    }
+
+    public MyEditTextView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+    }
+
+    public MyEditTextView(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+    }
+
+
+    @Override
+    public boolean onKeyPreIme(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == 1) {
+            super.onKeyPreIme(keyCode, event);
+            onKeyBoardHideListener.onKeyHide(keyCode, event);
+            return false;
+        }
+        return super.onKeyPreIme(keyCode, event);
+    }
+
+    /**
+     * 键盘监听接口
+     */
+    OnKeyBoardHideListener onKeyBoardHideListener;
+
+    public void setOnKeyBoardHideListener(OnKeyBoardHideListener onKeyBoardHideListener) {
+        this.onKeyBoardHideListener = onKeyBoardHideListener;
+    }
+
+    public interface OnKeyBoardHideListener {
+        void onKeyHide(int keyCode, KeyEvent event);
+    }
+}
+

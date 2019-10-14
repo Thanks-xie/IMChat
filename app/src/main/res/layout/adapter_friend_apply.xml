@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/apply_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:text="15:27"
+            android:textSize="10dp"
+            android:textColor="@android:color/darker_gray"
+            />
+        <RelativeLayout
+            android:layout_below="@+id/apply_time"
+            android:layout_width="match_parent"
+            android:layout_height="40dp">
+            <ImageView
+                android:id="@+id/apply_head"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@mipmap/head"/>
+            <TextView
+                android:layout_marginLeft="5dp"
+                android:id="@+id/apply_name"
+                android:layout_toRightOf="@+id/apply_head"
+                android:layout_centerVertical="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/apply_name"
+                android:textColor="@android:color/holo_blue_light"/>
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:id="@+id/refuse"
+                android:background="@mipmap/refuse"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="10dp"
+                android:layout_centerVertical="true"/>
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:id="@+id/accept"
+                android:background="@mipmap/agree"
+                android:layout_toLeftOf="@+id/refuse"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="10dp"/>
+        </RelativeLayout>
+    </RelativeLayout>
+
+
+</LinearLayout>

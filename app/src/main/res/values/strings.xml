@@ -1,0 +1,53 @@
+<resources>
+    <string name="app_name">IMChat</string>
+    <string name="name_hint">请输入用户名</string>
+    <string name="password_hint">请输入密码</string>
+    <string name="login">登 录</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="chat">消息</string>
+    <string name="contacts">通讯录</string>
+    <string name="find">发现</string>
+    <string name="mine">我的</string>
+    <string name="search_name">查找好友</string>
+    <string name="create_group">发起群聊</string>
+    <string name="add_friend">添加朋友</string>
+    <string name="add_name">请输入用户名</string>
+    <string name="mine_info">个人信息</string>
+    <string name="head_text">头像</string>
+    <string name="name_text">昵称</string>
+    <string name="qr_code_text">二维码名片</string>
+    <string name="change_password_text">修改密码</string>
+    <string name="logout">退 出</string>
+    <string name="userName_text">用户名</string>
+    <string name="search_text">搜索</string>
+    <string name="addToastSuccess">请求发送成功</string>
+    <string name="addToastFail">请求发送失败</string>
+    <string name="new_password">请输入新密码</string>
+    <string name="renew_password">确认密码</string>
+    <string name="old_password">请输入原密码</string>
+    <string name="summit">确认修改</string>
+    <string name="input_password_dialog">输入密码不能为空</string>
+    <string name="old_password_dialog">原密码输入错误</string>
+    <string name="new_password_dialog">两次输入密码不一致</string>
+    <string name="summit_password_dialog">密码修改失败</string>
+    <string name="yesterday">昨天</string>
+    <string name="send">发送</string>
+    <string name="add_apply">新朋友</string>
+    <string name="friend_apply">好友申请</string>
+    <string name="apply_name">申请好友名称</string>
+    <string name="register">新用户注册</string>
+    <string name="summit_register">确认注册</string>
+    <string name="change_nickname">修改备注名</string>
+    <string name="nickname_hint">请输入</string>
+    <string name="online_text">在线</string>
+    <string name="offline_text">离线</string>
+    <string name="group">群聊</string>
+    <string name="choose">选择</string>
+    <string name="left">(</string>
+    <string name="right">)</string>
+    <string name="room_title">聊天室名称</string>
+    <string name="empty_room_name">房间名称不能为空</string>
+    <string name="send_out">自己</string>
+</resources>

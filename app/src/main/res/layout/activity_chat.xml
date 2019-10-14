@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".activity.ChatActivity">
+
+    <!--顶部标题-->
+    <RelativeLayout
+        android:id="@+id/title"
+        style="@style/HeadRelativeLayout">
+
+        <ImageView
+            android:id="@+id/back"
+            android:layout_centerVertical="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@mipmap/back"
+            android:layout_marginLeft="10dp"/>
+
+        <TextView
+            android:id="@+id/chat_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="聊天人称呼"
+            android:textColor="@android:color/white"
+            android:layout_centerVertical="true"
+            android:layout_centerInParent="true"/>
+    </RelativeLayout>
+
+    <!--第一层次：底部输入框 和 消息显示框-->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <!--输入框紧贴底部-->
+        <RelativeLayout
+            android:id="@+id/re_input_view"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@color/bg_content"
+            android:layout_alignParentBottom="true">
+            <ImageView
+                android:layout_marginLeft="10dp"
+                android:id="@+id/input_voice"
+                android:layout_centerVertical="true"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="@mipmap/voice" />
+            <RelativeLayout
+                android:id="@+id/send_more"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <ImageView
+                    android:layout_marginRight="10dp"
+                    android:layout_marginLeft="10dp"
+                    android:id="@+id/more"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:background="@mipmap/more"
+                    />
+                <TextView
+                    android:visibility="gone"
+                    android:id="@+id/send"
+                    android:layout_marginLeft="5dp"
+                    android:layout_width="40dp"
+                    android:layout_height="30dp"
+                    android:text="@string/send"
+                    android:background="@android:color/holo_blue_light"
+                    android:textColor="@android:color/white"
+                    android:gravity="center|center_vertical"/>
+            </RelativeLayout>
+
+            <ImageView
+                android:layout_marginLeft="10dp"
+                android:id="@+id/input_emotion"
+                android:layout_toLeftOf="@id/send_more"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="@mipmap/emotion"
+                android:layout_centerVertical="true"/>
+            <cn.xie.imchat.view.MyEditTextView
+                android:layout_toRightOf="@+id/input_voice"
+                android:layout_toLeftOf="@+id/input_emotion"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="10dp"
+                android:paddingLeft="5dp"
+                android:id="@+id/input_text"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:background="@drawable/round_input_bg"
+                android:gravity="center_vertical"
+                android:inputType="textNoSuggestions"/>
+        </RelativeLayout>
+        <!--消息显示框紧贴输入框顶部-->
+        <!--聊天内容-->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_chat"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/re_input_view">
+        </androidx.recyclerview.widget.RecyclerView>
+    </RelativeLayout>
+
+
+</LinearLayout>

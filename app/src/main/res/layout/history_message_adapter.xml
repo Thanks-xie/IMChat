@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="45dp"
+    android:orientation="horizontal">
+
+    <ImageView
+        android:layout_marginLeft="5dp"
+        android:layout_centerVertical="true"
+        android:id="@+id/head"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:src="@mipmap/person"/>
+
+    <TextView
+        android:id="@+id/userName"
+        android:layout_marginLeft="5dp"
+        android:gravity="left|center_vertical"
+        android:layout_toEndOf="@+id/head"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="用户名"
+        android:textColor="@android:color/holo_blue_bright"/>
+    <TextView
+        android:id="@+id/msg_data"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/userName"
+        android:text="消息"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="10dp"
+        android:layout_toEndOf="@+id/head"
+        android:textSize="12dp"/>
+    <TextView
+        android:id="@+id/msg_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="20dp"
+        android:text="时间"
+        android:textSize="10dp"
+        android:textColor="@android:color/darker_gray"/>
+</RelativeLayout>

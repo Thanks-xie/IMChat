@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="45dp"
+    android:orientation="horizontal">
+
+    <CheckBox
+        android:id="@+id/checkbox"
+        android:layout_centerVertical="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="false"
+        android:textColor="@android:color/holo_blue_light"/>
+
+    <ImageView
+        android:layout_toRightOf="@+id/checkbox"
+        android:id="@+id/head"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:src="@mipmap/head" />
+
+    <TextView
+        android:layout_centerVertical="true"
+        android:id="@+id/name"
+        android:layout_marginLeft="15dp"
+        android:layout_toEndOf="@+id/head"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="用户名"
+        android:textColor="@android:color/holo_blue_bright"/>
+    <View
+        android:layout_below="@+id/online"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="@android:color/darker_gray"/>
+</RelativeLayout>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#008577</color>
+    <color name="colorPrimaryDark">#00574B</color>
+    <color name="colorAccent">#D81B60</color>
+    <dimen name="tab_image_weith">33dp</dimen>
+    <dimen name="tab_image_heigh">30dp</dimen>
+    <color name="main_bottom_tab_textcolor_normal">#999999</color>
+    <color name="main_bottom_tab_textcolor_selected">#46c01b</color>
+    <color name="item">#e6e6e6</color>
+    <color name="bg_content">#f3f3f3</color>
+    <color name="white">#ffffff</color>
+    <color name="bg_gray">#f0f0f0</color>
+    <color name="line">#d5d5d5</color>
+    <color name="text_color">#454545</color>
+    <color name="freight_click">#c7ebff</color>
+</resources>

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".fragment.HomeFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+    <!--顶部标题-->
+    <RelativeLayout
+        android:id="@+id/title"
+        style="@style/HeadRelativeLayout">
+
+        <TextView
+            android:layout_centerHorizontal="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/chat"
+            android:textColor="@android:color/white"
+            android:layout_centerVertical="true"
+            android:textSize="18dp"
+            android:layout_marginLeft="10dp"/>
+        <ImageView
+            android:id="@+id/add"
+            android:layout_centerVertical="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@mipmap/add"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="10dp"/>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:id="@+id/re_new_apply">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/add_apply"
+            android:layout_centerVertical="true"
+            android:textColor="@android:color/holo_blue_light"
+            android:layout_marginLeft="10dp"/>
+        <ImageView
+            android:layout_marginRight="10dp"
+            android:id="@+id/next"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:background="@mipmap/next"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"/>
+        <TextView
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/next"
+            android:layout_marginRight="10dp"
+            android:id="@+id/apply_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@mipmap/circular"
+            android:gravity="center"
+            android:textColor="@android:color/white"
+            android:textSize="10sp" />
+
+    </RelativeLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="@color/item"/>
+
+    <!--消息item-->
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_marginTop="5dp"
+        android:id="@+id/recycler_chat"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+    </androidx.recyclerview.widget.RecyclerView>
+
+</LinearLayout>
