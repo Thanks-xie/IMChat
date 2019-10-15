@@ -7,8 +7,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.alibaba.fastjson.JSON;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,10 +60,14 @@ public class DBManager {
         try {
             ContentValues values = new ContentValues();
             values.put("jid", chatUser.getJid());
+            values.put("username",chatUser.getUserName());
+            values.put("nickname",chatUser.getNickName());
+            values.put("email",chatUser.getEmail());
             database.beginTransaction();
             database.update("user", values, "username=?", new String[]{chatUser.getUserName()});
             database.setTransactionSuccessful();
         } catch (Exception e) {
+            Log.e("updateChatUserData","Exception: "+e.toString());
             return false;
         } finally {
             if (database.inTransaction()) {

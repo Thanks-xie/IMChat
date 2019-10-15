@@ -117,7 +117,6 @@ public class ChatService extends Service {
             for (ChatUser chatUser:chatUsers1){
                 if (chatUser.getUserName().equals(loginUser.getUserName())){
                     loginUser.setJid(chatUser.getJid());
-                    loginUser.setNickName(chatUser.getNickName());
                     loginUser.setEmail(chatUser.getEmail());
                     Util.saveLoginStatic(context,loginUser);
                     break;
@@ -135,12 +134,14 @@ public class ChatService extends Service {
         if (entryList!=null){
             List<ChatUser> chatUsers = new ArrayList<>();
             for (RosterEntry rosterEntry:entryList){
-                if ("both".equals(rosterEntry.getType().toString())&&!Util.getLoginInfo(context).getUserName().equals(rosterEntry.getUser().split("@")[0])){
-                    List<ChatUser> userInfos = XmppConnection.getInstance().searchUsers(rosterEntry.getUser().split("@")[0]);
-                    for (ChatUser chatUser:userInfos){
-                        if (rosterEntry.getUser().split("@")[0].equals(chatUser.getUserName())){
-                            chatUsers.add(userInfos.get(0));
-                            break;
+                if ("both".equals(rosterEntry.getType().toString())){
+                    //根据用户名查询详细信息，模糊查询
+                    List<ChatUser> userInfos = XmppConnection.getInstance().searchUsers(rosterEntry.getJid().toString().split("@")[0]);
+                    for (int i=0;i<userInfos.size();i++){
+                        if (rosterEntry.getJid().toString().split("@")[0].equals(userInfos.get(i).getUserName())){
+                            userInfos.get(i).setNickName(rosterEntry.getName());
+                             chatUsers.add(userInfos.get(i));
+                             break;
                         }
                     }
 

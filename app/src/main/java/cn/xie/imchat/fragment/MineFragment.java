@@ -4,7 +4,6 @@ package cn.xie.imchat.fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,17 +47,14 @@ public class MineFragment extends Fragment {
         dbManager = new DBManager(context);
         chatUser = new LoginUser();
         initView(view);
-        initData();
-        initView(view);
+
         return view;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        if (chatUser==null){
-            initData();
-        }
+        initData();
     }
 
     @Override
@@ -112,6 +108,8 @@ public class MineFragment extends Fragment {
             public void onClick(View v) {
                 Intent intent = new Intent(context, ChangeNickNameActivity.class);
                 intent.putExtra("nickname",chatUser.getNickName());
+                intent.putExtra("isMySelf",true);
+                intent.putExtra("changeUser",chatUser);
                 startActivity(intent);
             }
         });

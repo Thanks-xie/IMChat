@@ -13,6 +13,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.alibaba.fastjson.JSON;
+
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -54,6 +56,7 @@ public class ContractsAdapter extends RecyclerView.Adapter<ContractsAdapter.View
     @Override
     public void onBindViewHolder( ViewHolder holder, int position) {
         final ChatUser chatUser = chatUserList.get(position);
+        Log.e("xjbo","chatUser: "+ JSON.toJSON(chatUser));
         Util.showName(mContext,holder.name,chatUser.getUserName(),chatUser.getNickName());
         holder.headIcon.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -116,7 +119,7 @@ public class ContractsAdapter extends RecyclerView.Adapter<ContractsAdapter.View
         }
     };
     /**
-     * 获取好友在线状态
+     * 获取好友头像
      */
     @SuppressLint("HandlerLeak")
     private Handler showHeadImage = new Handler() {

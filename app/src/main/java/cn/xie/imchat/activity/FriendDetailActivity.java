@@ -29,13 +29,13 @@ public class FriendDetailActivity extends BaseActivity {
         setContentView(R.layout.activity_friend_detail);
         context = this;
         dbManager = new DBManager(context);
+        Intent intent = getIntent();
+        chatUser = (ChatUser) intent.getSerializableExtra("friend");
         initView();
         initData();
     }
 
     private void initData() {
-        Intent intent = getIntent();
-        chatUser = (ChatUser) intent.getSerializableExtra("friend");
         if (chatUser!=null){
             userName.setText(chatUser.getUserName());
             nickName.setText(chatUser.getNickName());
@@ -62,6 +62,8 @@ public class FriendDetailActivity extends BaseActivity {
                 if (Util.isNotFastClick()){
                     Intent intent = new Intent(context,ChangeNickNameActivity.class);
                     intent.putExtra("nickname",chatUser.getNickName());
+                    intent.putExtra("isMySelf",false);
+                    intent.putExtra("changeUser",chatUser);
                     startActivity(intent);
                 }
 
@@ -75,5 +77,12 @@ public class FriendDetailActivity extends BaseActivity {
             }
         });
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        chatUser = dbManager.queryChatUserByName(chatUser.getUserName());
+        initData();
     }
 }

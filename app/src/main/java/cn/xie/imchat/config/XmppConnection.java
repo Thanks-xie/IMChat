@@ -1008,7 +1008,7 @@ public class XmppConnection extends XMPPTCPConnection {
             if (getConnection() == null) {
                 return false;
             }
-            NickNameIQ nickNameIQ = new NickNameIQ("query", "jabber:iq:roster", changeId + "@xie-pc", newNickName);
+            NickNameIQ nickNameIQ = new NickNameIQ("query", "jabber:iq:roster", changeId, newNickName);
             nickNameIQ.setType(IQ.Type.set);
             nickNameIQ.setStanzaId(loginId + "@xie-pc/" + changeId);
             getConnection().sendStanza(nickNameIQ);

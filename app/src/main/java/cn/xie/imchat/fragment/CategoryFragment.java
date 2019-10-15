@@ -69,7 +69,8 @@ public class CategoryFragment extends Fragment {
         });
         context = getActivity();
         dbManager = new DBManager(context);
-        initData();
+        Log.e("xjbo","11 onCreateView");
+
         searchFriend = view.findViewById(R.id.search);
         //搜索监听
         searchFriend.addTextChangedListener(new TextWatcher() {
@@ -184,4 +185,9 @@ public class CategoryFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        initData();
+    }
 }

@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import cn.xie.imchat.R;
 import cn.xie.imchat.config.XmppConnection;
+import cn.xie.imchat.domain.ChatUser;
 import cn.xie.imchat.domain.LoginUser;
 import cn.xie.imchat.utils.DBManager;
 import cn.xie.imchat.utils.Util;
@@ -23,7 +24,9 @@ public class ChangeNickNameActivity extends BaseActivity {
     private EditText inputNickname;
     private Button button;
     private String oldNickName;
-
+    private ChatUser changeUser;
+    private LoginUser loginUser;
+    private boolean isMe;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,6 +35,13 @@ public class ChangeNickNameActivity extends BaseActivity {
         dbManager = new DBManager(context);
         Intent intent = getIntent();
         oldNickName = intent.getStringExtra("nickname");
+        isMe = intent.getBooleanExtra("isMySelf",false);
+        if (isMe){
+            loginUser = (LoginUser) intent.getSerializableExtra("changeUser");
+        }else {
+            changeUser = (ChatUser) intent.getSerializableExtra("changeUser");
+        }
+
         initView();
     }
 
@@ -58,16 +68,27 @@ public class ChangeNickNameActivity extends BaseActivity {
      * 修改备注名
      */
     private void changeNickName(){
-        if (TextUtils.isEmpty(inputNickname.getText().toString())){
+        String newNickName = inputNickname.getText().toString();
+        if (TextUtils.isEmpty(newNickName)){
             Toast.makeText(context,"输入备注名不能为空",Toast.LENGTH_SHORT).show();
             return;
         }
-        LoginUser loginUser = Util.getLoginInfo(context);
-        boolean result = XmppConnection.getConnection().modifyNickName(inputNickname.getText().toString(),loginUser.getUserName(),loginUser.getUserName());
+        boolean result = false;
+        if (isMe){
+            result = XmppConnection.getConnection().modifyNickName(newNickName,loginUser.getUserName(),loginUser.getJid());
+        }else {
+            result = XmppConnection.getConnection().modifyNickName(newNickName,Util.getLoginInfo(context).getUserName(),changeUser.getJid());
+        }
         if (result){
             Toast.makeText(context,"修改成功",Toast.LENGTH_SHORT).show();
-            loginUser.setNickName(inputNickname.getText().toString());
-            Util.saveLoginStatic(context,loginUser);
+            if (isMe){
+                loginUser.setNickName(newNickName);
+                Util.saveLoginStatic(context,loginUser);
+            }else {
+                changeUser.setNickName(newNickName);
+                dbManager.updateChatUserData(changeUser);
+            }
+
             onBackPressed();
         }else {
             Toast.makeText(context,"修改失败",Toast.LENGTH_SHORT).show();
