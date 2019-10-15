@@ -238,7 +238,7 @@ public class ChatService extends Service {
         LoginUser loginUser = Util.getLoginInfo(context);
         XmppConnection.getInstance().acceptFriendApply(applyJid);
         XmppConnection.getInstance().addUser(applyJid,loginUser.getUserName());
-        dbManager.deleteApplyMessage("chatMessage","sendname=? and myself=?", new String[]{applyJid.split("@")[0],"APPLY"});
+        dbManager.deleteData("chatMessage","sendname=? and myself=?", new String[]{applyJid.split("@")[0],"APPLY"});
         List<ChatUser> userInfos = XmppConnection.getInstance().searchUsers(applyJid.split("@")[0]);
         List<ChatUser> friendList = new ArrayList<>();
         for (ChatUser chatUser:userInfos){

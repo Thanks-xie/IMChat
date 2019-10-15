@@ -17,6 +17,8 @@ import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.alibaba.fastjson.JSON;
+
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.StanzaListener;
 import org.jivesoftware.smack.filter.StanzaTypeFilter;
@@ -113,6 +115,7 @@ public class HomeFragment extends Fragment {
                 chatMessages.remove(i);
             }
         }
+        Log.e("xjbo","chatMessages: "+ JSON.toJSON(chatMessages));
         adapter = new HistoryMsgAdapter(context,chatMessages);
         recycler_chat.setAdapter(adapter);
         adapter.setOnItemClickListener(new HistoryMsgAdapter.ItemClickListener() {

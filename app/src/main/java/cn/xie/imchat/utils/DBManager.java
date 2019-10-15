@@ -271,7 +271,7 @@ public class DBManager {
      * @param parameter
      * @return
      */
-    public boolean deleteApplyMessage(String table, String whereClause, String[] parameter) {
+    public boolean deleteData(String table, String whereClause, String[] parameter) {
         try {
             if (table != "" ) {
                 database.beginTransaction();

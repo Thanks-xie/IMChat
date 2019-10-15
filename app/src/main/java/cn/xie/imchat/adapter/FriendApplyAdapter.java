@@ -51,7 +51,7 @@ public class FriendApplyAdapter extends RecyclerView.Adapter<FriendApplyAdapter.
             public void onClick(View v) {
                 XmppConnection.getInstance().acceptFriendApply(applyJid);
                 XmppConnection.getInstance().addUser(applyJid,chatMessage.getUserName());
-                dbManager.deleteApplyMessage("chatMessage","sendname=? and myself=?", new String[]{chatMessage.getSendName(),"APPLY"});
+                dbManager.deleteData("chatMessage","sendname=? and myself=?", new String[]{chatMessage.getSendName(),"APPLY"});
                 List<ChatUser> userInfos = XmppConnection.getInstance().searchUsers(chatMessage.getSendName());
                 List<ChatUser> friendList = new ArrayList<>();
                 for (ChatUser chatUser:userInfos){
@@ -72,7 +72,7 @@ public class FriendApplyAdapter extends RecyclerView.Adapter<FriendApplyAdapter.
             @Override
             public void onClick(View v) {
                 XmppConnection.getInstance().refuseFriendApply(applyJid);
-                dbManager.deleteApplyMessage("chatMessage","sendname=? and myself=?", new String[]{chatMessage.getSendName(),"APPLY"});
+                dbManager.deleteData("chatMessage","sendname=? and myself=?", new String[]{chatMessage.getSendName(),"APPLY"});
                 applyList.remove(position);
                 notifyDataSetChanged();
             }

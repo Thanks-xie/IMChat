@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
 
@@ -23,6 +24,7 @@ import cn.xie.imchat.R;
 import cn.xie.imchat.activity.FriendDetailActivity;
 import cn.xie.imchat.config.XmppConnection;
 import cn.xie.imchat.domain.ChatUser;
+import cn.xie.imchat.utils.DBManager;
 import cn.xie.imchat.utils.Util;
 
 /**
@@ -33,6 +35,7 @@ public class ContractsAdapter extends RecyclerView.Adapter<ContractsAdapter.View
     private Context mContext;
     private List<ChatUser> chatUserList;
     private ItemClickListener itemClickListener;
+    private DBManager dbManager;
     public void setOnItemClickListener(ItemClickListener itemClickListener) {
         this.itemClickListener = itemClickListener;
     }
@@ -45,6 +48,7 @@ public class ContractsAdapter extends RecyclerView.Adapter<ContractsAdapter.View
     public ContractsAdapter(Context context, List<ChatUser> chatUsers){
         this.mContext = context;
         this.chatUserList = chatUsers;
+        this.dbManager = new DBManager(context);
     }
 
     @Override
@@ -54,7 +58,7 @@ public class ContractsAdapter extends RecyclerView.Adapter<ContractsAdapter.View
     }
 
     @Override
-    public void onBindViewHolder( ViewHolder holder, int position) {
+    public void onBindViewHolder(ViewHolder holder, final int position) {
         final ChatUser chatUser = chatUserList.get(position);
         Log.e("xjbo","chatUser: "+ JSON.toJSON(chatUser));
         Util.showName(mContext,holder.name,chatUser.getUserName(),chatUser.getNickName());
@@ -65,6 +69,23 @@ public class ContractsAdapter extends RecyclerView.Adapter<ContractsAdapter.View
                     Intent intent = new Intent(mContext, FriendDetailActivity.class);
                     intent.putExtra("friend",chatUser);
                     mContext.startActivity(intent);
+                }
+            }
+        });
+        holder.deleteIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (Util.isNotFastClick()){
+                    boolean result = XmppConnection.getInstance().removeUser(chatUser.getUserName());
+                    if (result){
+                        Toast.makeText(mContext,"删除成功",Toast.LENGTH_SHORT).show();
+                        dbManager.deleteData("user","jid=?", new String[]{chatUser.getJid()});
+                        dbManager.deleteData("chatMessage","sendname=? and username=?", new String[]{chatUser.getUserName(),Util.getLoginInfo(mContext).getUserName()});
+                        chatUserList.remove(position);
+                        notifyDataSetChanged();
+                    }else {
+                        Toast.makeText(mContext,"删除失败",Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
         });
@@ -85,13 +106,14 @@ public class ContractsAdapter extends RecyclerView.Adapter<ContractsAdapter.View
 
     class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView name,online;
-        ImageView headIcon;
+        ImageView headIcon,deleteIcon;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             itemView.setOnClickListener(this);
             name = itemView.findViewById(R.id.name);
             online = itemView.findViewById(R.id.online);
             headIcon = itemView.findViewById(R.id.head);
+            deleteIcon = itemView.findViewById(R.id.delete_icon);
         }
 
         @Override

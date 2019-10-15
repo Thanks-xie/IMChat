@@ -8,8 +8,10 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import cn.xie.imchat.R;
+import cn.xie.imchat.config.XmppConnection;
 import cn.xie.imchat.domain.ChatUser;
 import cn.xie.imchat.utils.DBManager;
 import cn.xie.imchat.utils.Util;
@@ -73,7 +75,15 @@ public class FriendDetailActivity extends BaseActivity {
         deleteFriend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                boolean result = XmppConnection.getInstance().removeUser(chatUser.getUserName());
+                if (result){
+                    Toast.makeText(context,"删除成功",Toast.LENGTH_SHORT).show();
+                    dbManager.deleteData("user","jid=?", new String[]{chatUser.getJid()});
+                    dbManager.deleteData("chatMessage","sendname=? and username=?", new String[]{chatUser.getUserName(),Util.getLoginInfo(context).getUserName()});
+                    finish();
+                }else {
+                    Toast.makeText(context,"删除失败",Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
