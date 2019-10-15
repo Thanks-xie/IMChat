@@ -7,8 +7,6 @@ import android.content.Intent;
 import android.os.Handler;
 import android.os.IBinder;
 import android.text.TextUtils;
-import android.util.Log;
-import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
 
@@ -107,10 +105,7 @@ public class ChatService extends Service {
     private Handler handlerInitAllFriends = new Handler(){
         @Override
         public void handleMessage(android.os.Message msg) {
-            List<ChatUser> chatUsers = dbManager.queryAllChatUser();
-            if (chatUsers==null||chatUsers.size()==0){
-                getAllFriends();
-            }
+            getAllFriends();
             //更新登录用户信息
             List<ChatUser> chatUsers1 = XmppConnection.getInstance().searchUsers(Util.getLoginInfo(context).getUserName());
             LoginUser loginUser = Util.getLoginInfo(context);
@@ -226,7 +221,10 @@ public class ChatService extends Service {
      * @param packet
      */
     private void setUnsubscribedPacket(Stanza packet) {
-        Toast.makeText(context,packet.getFrom().toString().split("@")[0]+": 拒绝添加好友",Toast.LENGTH_SHORT).show();
+        final String applyJid = packet.getFrom().toString();
+        LoginUser loginUser = Util.getLoginInfo(context);
+        dbManager.deleteData("user","jid=?", new String[]{applyJid});
+        dbManager.deleteData("chatMessage","sendname=? and username=?", new String[]{applyJid.split("@")[0],loginUser.getUserName()});
     }
 
     /**
@@ -304,7 +302,6 @@ public class ChatService extends Service {
         if (TextUtils.isEmpty(myMessage.sendtime)){
             return;
         }
-        Log.e("xjbo","myMessage: "+JSON.toJSON(myMessage));
         if (TextUtils.isEmpty(sendId)) {
             //单聊
             ChatUser chatUser = dbManager.queryChatUserByName(fromId);

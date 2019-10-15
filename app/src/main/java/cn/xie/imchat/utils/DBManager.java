@@ -35,10 +35,16 @@ public class DBManager {
     public boolean addChatUserData(List<ChatUser> chatUsers){
         try {
             database.beginTransaction();
-            for (ChatUser chatUser: chatUsers){
-                String sql = "INSERT INTO user VALUES(NULL,?,?,?,?)";
-                Object[] objects = new Object[]{chatUser.getUserName(),chatUser.getNickName(),chatUser.getEmail(),chatUser.getJid()};
-                database.execSQL(sql,objects);
+            for (int i=0;i<chatUsers.size();i++){
+                ChatUser chatUser1 = queryChatUserByName(chatUsers.get(i).getUserName());
+                if (!TextUtils.isEmpty(chatUser1.getUserName())){
+                    updateChatUserData(chatUser1);
+                    return true;
+                }else {
+                    String sql = "INSERT INTO user VALUES(NULL,?,?,?,?)";
+                    Object[] objects = new Object[]{chatUsers.get(i).getUserName(),chatUsers.get(i).getNickName(),chatUsers.get(i).getEmail(),chatUsers.get(i).getJid()};
+                    database.execSQL(sql,objects);
+                }
             }
             database.setTransactionSuccessful();
         } catch (Exception e) {

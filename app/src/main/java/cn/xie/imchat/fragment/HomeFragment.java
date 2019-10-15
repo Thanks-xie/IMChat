@@ -115,7 +115,6 @@ public class HomeFragment extends Fragment {
                 chatMessages.remove(i);
             }
         }
-        Log.e("xjbo","chatMessages: "+ JSON.toJSON(chatMessages));
         adapter = new HistoryMsgAdapter(context,chatMessages);
         recycler_chat.setAdapter(adapter);
         adapter.setOnItemClickListener(new HistoryMsgAdapter.ItemClickListener() {

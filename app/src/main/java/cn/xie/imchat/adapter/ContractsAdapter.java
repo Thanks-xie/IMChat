@@ -14,8 +14,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.alibaba.fastjson.JSON;
-
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -60,7 +58,6 @@ public class ContractsAdapter extends RecyclerView.Adapter<ContractsAdapter.View
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
         final ChatUser chatUser = chatUserList.get(position);
-        Log.e("xjbo","chatUser: "+ JSON.toJSON(chatUser));
         Util.showName(mContext,holder.name,chatUser.getUserName(),chatUser.getNickName());
         holder.headIcon.setOnClickListener(new View.OnClickListener() {
             @Override

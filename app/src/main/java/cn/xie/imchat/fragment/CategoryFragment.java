@@ -69,7 +69,6 @@ public class CategoryFragment extends Fragment {
         });
         context = getActivity();
         dbManager = new DBManager(context);
-        Log.e("xjbo","11 onCreateView");
 
         searchFriend = view.findViewById(R.id.search);
         //搜索监听
@@ -122,9 +121,11 @@ public class CategoryFragment extends Fragment {
     private void initData() {
         chatUsers = new ArrayList<>();
         chatUsers = dbManager.queryAllChatUser();
-        for (int i=0;i<chatUsers.size();i++){
-            if (chatUsers.get(i).getUserName().equals(Util.getLoginInfo(context).getUserName())) {
-                chatUsers.remove(i);
+        if (chatUsers!=null&&chatUsers.size()>0){
+            for (int i=0;i<chatUsers.size();i++){
+                if (chatUsers.get(i).getUserName().equals(Util.getLoginInfo(context).getUserName())) {
+                    chatUsers.remove(i);
+                }
             }
         }
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
