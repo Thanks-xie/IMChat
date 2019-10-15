@@ -1,10 +1,12 @@
 package cn.xie.imchat.domain;
 
+import java.io.Serializable;
+
 /**
  * @author xiejinbo
  * @date 2019/9/20 0020 11:19
  */
-public class ChatUser {
+public class ChatUser implements Serializable {
     private String nickName;
     private String jid;
     private String userName;

@@ -28,6 +28,7 @@ import cn.xie.imchat.R;
 import cn.xie.imchat.activity.AddFriendActivity;
 import cn.xie.imchat.activity.ChatActivity;
 import cn.xie.imchat.activity.ChatGroupListActivity;
+import cn.xie.imchat.activity.ChooseFriendsToRoomActivity;
 import cn.xie.imchat.adapter.ContractsAdapter;
 import cn.xie.imchat.domain.ChatUser;
 import cn.xie.imchat.utils.DBManager;
@@ -156,7 +157,11 @@ public class CategoryFragment extends Fragment {
             createGroup.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    pwindow.dismiss();
+                    if (Util.isNotFastClick()){
+                        Intent intent = new Intent(context, ChooseFriendsToRoomActivity.class);
+                        startActivity(intent);
+                        pwindow.dismiss();
+                    }
                 }
             });
             addFriend.setOnClickListener(new View.OnClickListener() {

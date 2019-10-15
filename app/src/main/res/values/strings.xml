@@ -50,4 +50,8 @@
     <string name="room_title">聊天室名称</string>
     <string name="empty_room_name">房间名称不能为空</string>
     <string name="send_out">自己</string>
+    <string name="friend_detail">好友详细</string>
+    <string name="nickname_text">备注名</string>
+    <string name="email_text">邮箱</string>
+    <string name="delete_friend">删除好友</string>
 </resources>

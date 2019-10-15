@@ -2,6 +2,7 @@ package cn.xie.imchat.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Message;
@@ -9,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.List;
@@ -16,6 +18,7 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import cn.xie.imchat.R;
+import cn.xie.imchat.activity.FriendDetailActivity;
 import cn.xie.imchat.config.XmppConnection;
 import cn.xie.imchat.domain.ChatUser;
 import cn.xie.imchat.utils.Util;
@@ -52,10 +55,20 @@ public class ContractsAdapter extends RecyclerView.Adapter<ContractsAdapter.View
     public void onBindViewHolder( ViewHolder holder, int position) {
         final ChatUser chatUser = chatUserList.get(position);
         Util.showName(mContext,holder.name,chatUser.getUserName(),chatUser.getNickName());
+        holder.headIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (Util.isNotFastClick()){
+                    Intent intent = new Intent(mContext, FriendDetailActivity.class);
+                    intent.putExtra("friend",chatUser);
+                    mContext.startActivity(intent);
+                }
+            }
+        });
         Message msg = new Message();
         msg.what = position;
         msg.obj = holder;
-        showHeadImage.sendMessage(msg);
+        //showHeadImage.sendMessage(msg);
         Message msg1 = new Message();
         msg1.what = position;
         msg1.obj = holder;
@@ -69,11 +82,13 @@ public class ContractsAdapter extends RecyclerView.Adapter<ContractsAdapter.View
 
     class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView name,online;
+        ImageView headIcon;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             itemView.setOnClickListener(this);
             name = itemView.findViewById(R.id.name);
             online = itemView.findViewById(R.id.online);
+            headIcon = itemView.findViewById(R.id.head);
         }
 
         @Override
