@@ -3,13 +3,10 @@ package cn.xie.imchat.activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import com.alibaba.fastjson.JSON;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,7 +56,7 @@ public class AddFriendActivity extends BaseActivity {
                 String inputName = addName.getText().toString();
                 if (!TextUtils.isEmpty(inputName)){
                     userInfoList = new ArrayList<>();
-                    userInfoList =  XmppConnection.getInstance().searchUsers(inputName);
+                    userInfoList =  XmppConnection.getInstance(context).searchUsers(context,inputName);
                     adapter = new SearchUserAdapter(context,userInfoList);
                     adapter.notifyDataSetChanged();
                     searchRecycler.setAdapter(adapter);

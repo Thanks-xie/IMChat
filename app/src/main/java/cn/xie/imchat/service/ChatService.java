@@ -12,12 +12,14 @@ import com.alibaba.fastjson.JSON;
 
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.StanzaListener;
+import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.filter.PresenceTypeFilter;
 import org.jivesoftware.smack.filter.StanzaTypeFilter;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.roster.RosterEntry;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -83,19 +85,28 @@ public class ChatService extends Service {
      * 判断是否连接并登录了XMpp
      */
     private void judgeLoginXMPP() {
-        if (!XmppConnection.getInstance().checkConnection()){
-            XmppConnection.getConnection();
-        }
-        if (!XmppConnection.getInstance().checkAuthenticated()){
 
-            LoginUser user = new LoginUser();
-            user = Util.getLoginInfo(context);
-            XmppConnection.getInstance().loginXmpp(user.getUserName(),user.getPassword());
+            Thread thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                    if (!XmppConnection.getInstance(context).checkConnection()) {
+                        XmppConnection.getConnection(context).connect();
+                    }
+                    if (!XmppConnection.getInstance(context).checkAuthenticated()){
+                        LoginUser user = new LoginUser();
+                        user = Util.getLoginInfo(context);
+                        XmppConnection.getInstance(context).loginXmpp(context,user.getUserName(),user.getPassword());
 
-        }
-        XmppConnection.getInstance().getOfflineMessage(context);
-        processPacket();
-
+                    }
+                    XmppConnection.getInstance(context).getOfflineMessage(context);
+                    processPacket();
+                } catch (SmackException |IOException |XMPPException|InterruptedException  e) {
+                    e.printStackTrace();
+                }
+                }
+            });
+            thread.start();
     }
 
     /**
@@ -107,7 +118,7 @@ public class ChatService extends Service {
         public void handleMessage(android.os.Message msg) {
             getAllFriends();
             //更新登录用户信息
-            List<ChatUser> chatUsers1 = XmppConnection.getInstance().searchUsers(Util.getLoginInfo(context).getUserName());
+            List<ChatUser> chatUsers1 = XmppConnection.getInstance(context).searchUsers(context,Util.getLoginInfo(context).getUserName());
             LoginUser loginUser = Util.getLoginInfo(context);
             for (ChatUser chatUser:chatUsers1){
                 if (chatUser.getUserName().equals(loginUser.getUserName())){
@@ -124,14 +135,14 @@ public class ChatService extends Service {
      * 加载所有好友
      */
     private void getAllFriends() {
-        List<RosterEntry> entryList = XmppConnection.getInstance().getAllEntries();
+        List<RosterEntry> entryList = XmppConnection.getInstance(context).getAllEntries(context);
 
         if (entryList!=null){
             List<ChatUser> chatUsers = new ArrayList<>();
             for (RosterEntry rosterEntry:entryList){
                 if ("both".equals(rosterEntry.getType().toString())){
                     //根据用户名查询详细信息，模糊查询
-                    List<ChatUser> userInfos = XmppConnection.getInstance().searchUsers(rosterEntry.getJid().toString().split("@")[0]);
+                    List<ChatUser> userInfos = XmppConnection.getInstance(context).searchUsers(context,rosterEntry.getJid().toString().split("@")[0]);
                     for (int i=0;i<userInfos.size();i++){
                         if (rosterEntry.getJid().toString().split("@")[0].equals(userInfos.get(i).getUserName())){
                             userInfos.get(i).setNickName(rosterEntry.getName());
@@ -200,20 +211,20 @@ public class ChatService extends Service {
             };
         }
 
-        XmppConnection.getInstance().removeAsyncStanzaListener(packetMessageListener);
-        XmppConnection.getInstance().addAsyncStanzaListener(packetMessageListener, StanzaTypeFilter.MESSAGE);
+        XmppConnection.getInstance(context).removeAsyncStanzaListener(packetMessageListener);
+        XmppConnection.getInstance(context).addAsyncStanzaListener(packetMessageListener, StanzaTypeFilter.MESSAGE);
 
-        XmppConnection.getInstance().removeSyncStanzaListener(packetUnsubscribeListener);
-        XmppConnection.getInstance().addSyncStanzaListener(packetUnsubscribeListener, PresenceTypeFilter.UNSUBSCRIBE);
+        XmppConnection.getInstance(context).removeSyncStanzaListener(packetUnsubscribeListener);
+        XmppConnection.getInstance(context).addSyncStanzaListener(packetUnsubscribeListener, PresenceTypeFilter.UNSUBSCRIBE);
 
-        XmppConnection.getInstance().removeSyncStanzaListener(packetUnsubscribedListener);
-        XmppConnection.getInstance().addSyncStanzaListener(packetUnsubscribedListener, PresenceTypeFilter.UNSUBSCRIBED);
+        XmppConnection.getInstance(context).removeSyncStanzaListener(packetUnsubscribedListener);
+        XmppConnection.getInstance(context).addSyncStanzaListener(packetUnsubscribedListener, PresenceTypeFilter.UNSUBSCRIBED);
 
-        XmppConnection.getInstance().removeSyncStanzaListener(packetSubscribedListener);
-        XmppConnection.getInstance().addSyncStanzaListener(packetSubscribedListener, PresenceTypeFilter.SUBSCRIBED);
+        XmppConnection.getInstance(context).removeSyncStanzaListener(packetSubscribedListener);
+        XmppConnection.getInstance(context).addSyncStanzaListener(packetSubscribedListener, PresenceTypeFilter.SUBSCRIBED);
 
-        XmppConnection.getInstance().removeSyncStanzaListener(packetSubscribeListener);
-        XmppConnection.getInstance().addSyncStanzaListener(packetSubscribeListener, PresenceTypeFilter.SUBSCRIBE);
+        XmppConnection.getInstance(context).removeSyncStanzaListener(packetSubscribeListener);
+        XmppConnection.getInstance(context).addSyncStanzaListener(packetSubscribeListener, PresenceTypeFilter.SUBSCRIBE);
     }
 
     /**
@@ -234,10 +245,10 @@ public class ChatService extends Service {
     private void setSubscribedPacket(Stanza packet) {
         final String applyJid = packet.getFrom().toString();
         LoginUser loginUser = Util.getLoginInfo(context);
-        XmppConnection.getInstance().acceptFriendApply(applyJid);
-        XmppConnection.getInstance().addUser(applyJid,loginUser.getUserName());
+        XmppConnection.getInstance(context).acceptFriendApply(context,applyJid);
+        XmppConnection.getInstance(context).addUser(context,applyJid,loginUser.getUserName());
         dbManager.deleteData("chatMessage","sendname=? and myself=?", new String[]{applyJid.split("@")[0],"APPLY"});
-        List<ChatUser> userInfos = XmppConnection.getInstance().searchUsers(applyJid.split("@")[0]);
+        List<ChatUser> userInfos = XmppConnection.getInstance(context).searchUsers(context,applyJid.split("@")[0]);
         List<ChatUser> friendList = new ArrayList<>();
         for (ChatUser chatUser:userInfos){
             if (applyJid.split("@")[0].equals(chatUser.getUserName())){
@@ -337,7 +348,7 @@ public class ChatService extends Service {
     private Handler handlerGetAllRooms = new Handler(){
         @Override
         public void handleMessage(android.os.Message msg) {
-            XmppConnection.getInstance().getAllRooms(context);
+            XmppConnection.getInstance(context).getAllRooms(context);
         }
     };
 

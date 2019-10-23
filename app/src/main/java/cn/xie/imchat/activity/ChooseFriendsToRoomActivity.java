@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -160,7 +159,7 @@ public class ChooseFriendsToRoomActivity extends BaseActivity {
     private Handler createRoomAndAddMember = new Handler(){
         @Override
         public void handleMessage(Message msg) {
-            boolean result = XmppConnection.getInstance().createChatRoom(context,roomNameText,Util.chooseFriends);
+            boolean result = XmppConnection.getInstance(context).createChatRoom(context,roomNameText,Util.chooseFriends);
             if (result){
                 //创建聊天室成功就保存到本地
                 List<ChatRoom> chatRooms = new ArrayList<>();

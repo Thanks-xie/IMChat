@@ -54,7 +54,7 @@ public class ChangePasswordActivity extends BaseActivity {
                     Toast.makeText(context,R.string.new_password_dialog,Toast.LENGTH_SHORT).show();
                     return;
                 }
-                boolean result = XmppConnection.getInstance().changePassword(newPasswordStr);
+                boolean result = XmppConnection.getInstance(context).changePassword(context,newPasswordStr);
                 if (result){
                     LoginUser loginUser = new LoginUser();
                     loginUser.setUserName(Util.getLoginInfo(context).getUserName());

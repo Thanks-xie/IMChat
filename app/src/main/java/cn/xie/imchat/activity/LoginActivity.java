@@ -41,7 +41,7 @@ public class LoginActivity extends BaseActivity {
             public void onClick(View v) {
                 String userName = inputName.getText().toString();
                 String userPassWord = inputPassword.getText().toString();
-                boolean isLogin = XmppConnection.getInstance().loginXmpp(userName,userPassWord);
+                boolean isLogin = XmppConnection.getInstance(context).loginXmpp(context,userName,userPassWord);
                 if (isLogin){
                     LoginUser loginUser = new LoginUser();
                     loginUser.setUserName(userName);

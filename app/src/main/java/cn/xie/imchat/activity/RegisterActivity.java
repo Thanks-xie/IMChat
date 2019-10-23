@@ -66,7 +66,7 @@ public class RegisterActivity extends BaseActivity {
             Toast.makeText(context,"两次输入密码不一致",Toast.LENGTH_SHORT).show();
             return;
         }
-        boolean result = XmppConnection.getInstance().register(name,password);
+        boolean result = XmppConnection.getInstance(context).register(context,name,password);
         if (result){
             Intent intent = new Intent(context,LoginActivity.class);
             intent.putExtra("name",name);

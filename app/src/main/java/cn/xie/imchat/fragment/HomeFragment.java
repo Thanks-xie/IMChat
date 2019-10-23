@@ -17,8 +17,6 @@ import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.alibaba.fastjson.JSON;
-
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.StanzaListener;
 import org.jivesoftware.smack.filter.StanzaTypeFilter;
@@ -80,6 +78,7 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 showAddPopupWindow();
+
             }
         });
         context = getActivity();
@@ -225,7 +224,7 @@ public class HomeFragment extends Fragment {
                             }
                         };
                     }
-                    XmppConnection.getInstance().addAsyncStanzaListener(packetListener, StanzaTypeFilter.MESSAGE);
+                    XmppConnection.getInstance(context).addAsyncStanzaListener(packetListener, StanzaTypeFilter.MESSAGE);
                 }
             });
             thread.start();
@@ -264,7 +263,7 @@ public class HomeFragment extends Fragment {
                             }
                         };
                     }
-                    XmppConnection.getInstance().addSyncStanzaListener(packetApplyListener, StanzaTypeFilter.PRESENCE);
+                    XmppConnection.getInstance(context).addSyncStanzaListener(packetApplyListener, StanzaTypeFilter.PRESENCE);
                 }
             });
             thread.start();

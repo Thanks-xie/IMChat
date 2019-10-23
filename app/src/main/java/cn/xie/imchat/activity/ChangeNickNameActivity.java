@@ -75,9 +75,9 @@ public class ChangeNickNameActivity extends BaseActivity {
         }
         boolean result = false;
         if (isMe){
-            result = XmppConnection.getConnection().modifyNickName(newNickName,loginUser.getUserName(),loginUser.getJid());
+            result = XmppConnection.getConnection(context).modifyNickName(context,newNickName,loginUser.getUserName(),loginUser.getJid());
         }else {
-            result = XmppConnection.getConnection().modifyNickName(newNickName,Util.getLoginInfo(context).getUserName(),changeUser.getJid());
+            result = XmppConnection.getConnection(context).modifyNickName(context,newNickName,Util.getLoginInfo(context).getUserName(),changeUser.getJid());
         }
         if (result){
             Toast.makeText(context,"修改成功",Toast.LENGTH_SHORT).show();

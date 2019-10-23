@@ -119,7 +119,7 @@ public class FriendApplyActivity extends BaseActivity {
                             }
                         };
                     }
-                    XmppConnection.getInstance().addSyncStanzaListener(packetApplyListener, PresenceTypeFilter.SUBSCRIBE);
+                    XmppConnection.getInstance(context).addSyncStanzaListener(packetApplyListener, PresenceTypeFilter.SUBSCRIBE);
                 }
             });
             thread.start();

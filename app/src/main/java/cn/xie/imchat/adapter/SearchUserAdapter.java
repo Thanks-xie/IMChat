@@ -1,15 +1,12 @@
 package cn.xie.imchat.adapter;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.alibaba.fastjson.JSON;
 
 import java.util.List;
 
@@ -48,7 +45,7 @@ public class SearchUserAdapter extends RecyclerView.Adapter<SearchUserAdapter.Vi
         holder.sendFollow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                boolean result = XmppConnection.getInstance().addUser(userInfo.getJid(),userInfo.getUserName());
+                boolean result = XmppConnection.getInstance(mContext).addUser(mContext,userInfo.getJid(),userInfo.getUserName());
                 if (result){
                     holder.sendFollow.setImageDrawable(mContext.getResources().getDrawable(R.mipmap.follow));
                     Toast.makeText(mContext,R.string.addToastSuccess,Toast.LENGTH_SHORT).show();

@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.TimeZone;
 
 import cn.xie.imchat.R;
+import cn.xie.imchat.config.XmppConnection;
 import cn.xie.imchat.domain.ChatUser;
 import cn.xie.imchat.domain.LoginUser;
 import cn.xie.imchat.service.ChatService;
@@ -310,5 +311,29 @@ public class Util {
         return d;
     }
 
+    /**
+     * 数据持久化，保存选择的线路
+     * @param context
+     */
+    public static void saveServiceLine(Context context,String line){
+        SharedPreferences.Editor editor = context.getSharedPreferences("data",MODE_PRIVATE).edit();
+        editor.putString("serviceLine",line);
+        editor.apply();
+        XmppConnection.getInstance(context).logOut(context);
+    }
+
+    /**
+     * 服务器线路获取持久化数据
+     */
+    public static String getServiceHost(Context context) {
+        SharedPreferences preferences = context.getSharedPreferences("data", MODE_PRIVATE);
+        String serviceLine = preferences.getString("serviceLine","");
+        if (TextUtils.isEmpty(serviceLine)){
+            return "im.ezcarry.com";
+        }else {
+            return serviceLine;
+        }
+
+    }
 
 }

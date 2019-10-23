@@ -1,6 +1,7 @@
 package cn.xie.imchat.config;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.util.Log;
@@ -58,6 +59,7 @@ import cn.xie.imchat.domain.ChatMessage;
 import cn.xie.imchat.domain.ChatRoom;
 import cn.xie.imchat.domain.ChatUser;
 import cn.xie.imchat.domain.LoginUser;
+import cn.xie.imchat.service.ChatService;
 import cn.xie.imchat.utils.DBManager;
 import cn.xie.imchat.utils.NickNameIQ;
 import cn.xie.imchat.utils.Util;
@@ -69,9 +71,9 @@ import cn.xie.imchat.utils.Util;
 public class XmppConnection extends XMPPTCPConnection {
     private static XmppConnection connection = null;
     private static int SERVER_PORT = 5222;
-    private static String SERVER_HOST = "192.168.0.130";
+    private static String SERVER_HOST = "127.0.0.1";
     private static String SERVER_NAME = "xie-pc";
-    private ConnectionListener connectionListener;
+    private static ConnectionListener connectionListener;
     private DBManager dbManager;
 
     public XmppConnection(XMPPTCPConnectionConfiguration config) {
@@ -84,9 +86,9 @@ public class XmppConnection extends XMPPTCPConnection {
      *
      * @return
      */
-    public synchronized static XmppConnection getInstance() {
+    public synchronized static XmppConnection getInstance(Context context) {
 
-        return getConnection();
+        return getConnection(context);
     }
 
     /**
@@ -94,14 +96,14 @@ public class XmppConnection extends XMPPTCPConnection {
      *
      * @return
      */
-    public static XmppConnection getConnection() {
+    public static XmppConnection getConnection(Context context) {
         if (connection == null) {
             // 开线程打开连接，避免在主线程里面执行HTTP请求
             // Caused by: android.os.NetworkOnMainThreadException
             /*new Thread(new Runnable() {
                 @Override
                 public void run() {*/
-            openConnection();
+            openConnection(context);
                /* }
             }).start();
 */
@@ -123,13 +125,14 @@ public class XmppConnection extends XMPPTCPConnection {
      *
      * @return
      */
-    public static boolean openConnection() {
+    public static boolean openConnection(Context context) {
         try {
             if (null == connection || !connection.isAuthenticated()) {
                 SmackConfiguration.DEBUG = true;
                 XMPPTCPConnectionConfiguration.Builder config = XMPPTCPConnectionConfiguration.builder();
                 //设置openfire主机IP
                 config.setHostAddress(InetAddress.getByName(SERVER_HOST));
+
                 //设置openfire服务器名称
                 config.setXmppDomain(SERVER_NAME);
                 //设置端口号：默认5222
@@ -144,6 +147,8 @@ public class XmppConnection extends XMPPTCPConnection {
                 //设置开启压缩，可以节省流量
                 config.setCompressionEnabled(true);
 
+                SmackConfiguration.DEBUG=true;
+
 
                 //需要经过同意才可以添加好友
                 Roster.setDefaultSubscriptionMode(Roster.SubscriptionMode.manual);
@@ -153,7 +158,7 @@ public class XmppConnection extends XMPPTCPConnection {
                 //SASLAuthentication.blacklistSASLMechanism("DIGEST-MD5");
 
                 connection = new XmppConnection(config.build());
-                connection.connect();// 连接到服务器
+                //connection.connect();// 连接到服务器
                 Roster.getInstanceFor(connection).setSubscriptionMode(Roster.SubscriptionMode.manual);
                 ReconnectionManager reconnectionManager = ReconnectionManager.getInstanceFor(connection);
                 // 重联间隔5秒
@@ -169,9 +174,35 @@ public class XmppConnection extends XMPPTCPConnection {
                         Log.e("xjbo", "pingFailed");
                     }
                 });
+
+                // 添加连接监听
+                connectionListener = new ConnectionListener() {
+                    @Override
+                    public void connected(XMPPConnection connection) {
+                        Log.e("xjbo connected", "已经连接");
+                        Log.e("xjbo connected", "当前线路："+connection.getHost());
+                    }
+
+                    @Override
+                    public void authenticated(XMPPConnection connection, boolean resumed) {
+                        Log.e("xjbo authenticated", "已经登录");
+                    }
+
+                    @Override
+                    public void connectionClosed() {
+                        Log.e("xjbo connectionClosed", "连接关闭");
+                    }
+
+                    @Override
+                    public void connectionClosedOnError(Exception e) {
+                        Log.e("connectionClosedOnError", "Exception: " + e.toString());
+                        Log.e("connectionClosedOnError", "连接错误");
+                    }
+                };
+                getConnection(context).addConnectionListener(connectionListener);
                 return true;
             }
-        } catch (SmackException | IOException | XMPPException | InterruptedException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return false;
@@ -209,39 +240,16 @@ public class XmppConnection extends XMPPTCPConnection {
      * @param password 密码
      * @return
      */
-    public boolean loginXmpp(String userName, String password) {
+    public boolean loginXmpp(Context context,String userName, String password) {
         try {
-            if (getConnection() == null) {
+            if (getConnection(context) == null) {
                 return false;
             }
-            getConnection().login(userName, password);
+            getConnection(context).login(userName, password);
             // 更改在线状态
-            setPresence(5);
+            setPresence(context,5);
 
-            // 添加连接监听
-            connectionListener = new ConnectionListener() {
-                @Override
-                public void connected(XMPPConnection connection) {
-                    Log.d("xjbo connected", "已经连接");
-                }
 
-                @Override
-                public void authenticated(XMPPConnection connection, boolean resumed) {
-                    Log.d("xjbo authenticated", "已经登录");
-                }
-
-                @Override
-                public void connectionClosed() {
-                    Log.d("xjbo connectionClosed", "连接关闭");
-                }
-
-                @Override
-                public void connectionClosedOnError(Exception e) {
-                    Log.e("connectionClosedOnError", "Exception: " + e.toString());
-                    Log.d("connectionClosedOnError", "连接错误");
-                }
-            };
-            getConnection().addConnectionListener(connectionListener);
             return true;
 
         } catch (IOException | InterruptedException | SmackException | XMPPException e) {
@@ -257,8 +265,8 @@ public class XmppConnection extends XMPPTCPConnection {
      * @param password 注册密码
      * @return 1、注册成功 0、注册失败
      */
-    public boolean register(String account, String password) {
-        if (getConnection() == null) {
+    public boolean register(Context context ,String account, String password) {
+        if (getConnection(context) == null) {
             return false;
         }
         try {
@@ -278,8 +286,8 @@ public class XmppConnection extends XMPPTCPConnection {
     /**
      * 更改用户状态
      */
-    public void setPresence(int code) {
-        XMPPConnection con = getConnection();
+    public void setPresence(Context context,int code) {
+        XMPPConnection con = getConnection(context);
         if (con == null) {
             return;
         }
@@ -346,8 +354,8 @@ public class XmppConnection extends XMPPTCPConnection {
      *
      * @return 所有分组集合
      */
-    public List<RosterGroup> getGroups() {
-        if (getConnection() == null) {
+    public List<RosterGroup> getGroups(Context context) {
+        if (getConnection(context) == null) {
             return null;
         }
         List<RosterGroup> groupList = new ArrayList<>();
@@ -364,8 +372,8 @@ public class XmppConnection extends XMPPTCPConnection {
      * @param groupName 组名
      * @return List<RosterEntry>
      */
-    public List<RosterEntry> getEntriesByGroup(String groupName) {
-        if (getConnection() == null) {
+    public List<RosterEntry> getEntriesByGroup(Context context,String groupName) {
+        if (getConnection(context) == null) {
             return null;
         }
         List<RosterEntry> EntriesList = new ArrayList<>();
@@ -382,8 +390,8 @@ public class XmppConnection extends XMPPTCPConnection {
      *
      * @return List<RosterEntry>
      */
-    public List<RosterEntry> getAllEntries() {
-        if (getConnection() == null) {
+    public List<RosterEntry> getAllEntries(Context context) {
+        if (getConnection(context) == null) {
             return null;
         }
         final List<RosterEntry> enlist = new ArrayList<>();
@@ -419,13 +427,13 @@ public class XmppConnection extends XMPPTCPConnection {
      * @param user user
      * @return VCard
      */
-    public VCard getUserVCard(String user) {
-        if (getConnection() == null) {
+    public VCard getUserVCard(Context context,String user) {
+        if (getConnection(context) == null) {
             return null;
         }
         VCard vcard = new VCard();
         try {
-            vcard = VCardManager.getInstanceFor(getConnection()).loadVCard(JidCreate.entityBareFrom(user));
+            vcard = VCardManager.getInstanceFor(getConnection(context)).loadVCard(JidCreate.entityBareFrom(user));
         } catch (XmppStringprepException | SmackException | InterruptedException | XMPPException.XMPPErrorException e) {
             e.printStackTrace();
         }
@@ -439,8 +447,8 @@ public class XmppConnection extends XMPPTCPConnection {
      * @param user user
      * @return Drawable
      */
-    public Drawable getUserImage(String user) {
-        if (getConnection() == null)
+    public Drawable getUserImage(Context context,String user) {
+        if (getConnection(context) == null)
         {
             return null;
         }
@@ -454,7 +462,7 @@ public class XmppConnection extends XMPPTCPConnection {
                 return null;
             }
             try {
-                VCardManager.getInstanceFor(getConnection()).loadVCard(JidCreate.entityBareFrom(user));
+                VCardManager.getInstanceFor(getConnection(context)).loadVCard(JidCreate.entityBareFrom(user));
             } catch (XmppStringprepException | SmackException | InterruptedException | XMPPException.XMPPErrorException e) {
                 e.printStackTrace();
             }
@@ -477,8 +485,8 @@ public class XmppConnection extends XMPPTCPConnection {
      * @param groupName groupName
      * @return boolean
      */
-    public boolean addGroup(String groupName) {
-        if (getConnection() == null) {
+    public boolean addGroup(Context context,String groupName) {
+        if (getConnection(context) == null) {
             return false;
         }
         try {
@@ -508,8 +516,8 @@ public class XmppConnection extends XMPPTCPConnection {
      * @param jid      name
      * @return boolean
      */
-    public boolean addUser(String jid, String userName) {
-        if (getConnection() == null) {
+    public boolean addUser(Context context,String jid, String userName) {
+        if (getConnection(context) == null) {
             return false;
         }
         try {
@@ -529,15 +537,15 @@ public class XmppConnection extends XMPPTCPConnection {
      * @param groupName groupName
      * @return boolean
      */
-    public boolean addUser(String userName, String name, String groupName) {
-        if (getConnection() == null) {
+    public boolean addUser(Context context,String userName, String name, String groupName) {
+        if (getConnection(context) == null) {
             return false;
         }
         try {
             Presence subscription = new Presence(Presence.Type.subscribed);
             subscription.setTo(JidCreate.entityBareFrom(userName));
-            userName += "@" + getConnection().getXMPPServiceDomain();
-            getConnection().sendStanza(subscription);
+            userName += "@" + getConnection(context).getXMPPServiceDomain();
+            getConnection(context).sendStanza(subscription);
             Roster.getInstanceFor(connection).createEntry(JidCreate.entityBareFrom(userName), name,
                     new String[]{groupName});
             return true;
@@ -553,8 +561,8 @@ public class XmppConnection extends XMPPTCPConnection {
      * @param userName userName
      * @return boolean
      */
-    public boolean removeUser(String userName) {
-        if (getConnection() == null) {
+    public boolean removeUser(Context context,String userName) {
+        if (getConnection(context) == null) {
             return false;
         }
         try {
@@ -563,7 +571,7 @@ public class XmppConnection extends XMPPTCPConnection {
                 entry = Roster.getInstanceFor(connection).getEntry(JidCreate.entityBareFrom(userName));
             } else {
                 entry = Roster.getInstanceFor(connection).getEntry(JidCreate.entityBareFrom(
-                        userName + "@" + getConnection().getXMPPServiceDomain()));
+                        userName + "@" + getConnection(context).getXMPPServiceDomain()));
             }
             if (entry == null) {
                 entry = Roster.getInstanceFor(connection).getEntry(JidCreate.entityBareFrom(userName));
@@ -583,17 +591,17 @@ public class XmppConnection extends XMPPTCPConnection {
      * @param userName userName
      * @return List<HashMap < String, String>>
      */
-    public List<ChatUser> searchUsers(String userName) {
-        if (getConnection() == null) {
+    public List<ChatUser> searchUsers(Context context,String userName) {
+        if (getConnection(context) == null) {
             return null;
         }
         ChatUser user;  //自定义的用户实体类
         List<ChatUser> userInfos = new ArrayList<>();
         try {
-            UserSearchManager usm = new UserSearchManager(getConnection());
+            UserSearchManager usm = new UserSearchManager(getConnection(context));
             //本例用的smack:4.3.4版本，getSearchForm方法传的是DomainBareJid类型，而之前的版本是String类型，大家在使用的时候需要特别注意
             //而转换DomainBareJid的方式如下面的例子所示：JidCreate.domainBareFrom("search." + getConnection().getXMPPServiceDomain())
-            Form searchForm = usm.getSearchForm(JidCreate.domainBareFrom("search." + getConnection().getXMPPServiceDomain()));
+            Form searchForm = usm.getSearchForm(JidCreate.domainBareFrom("search." + getConnection(context).getXMPPServiceDomain()));
             if (searchForm == null) {
                 return null;
             }
@@ -602,7 +610,7 @@ public class XmppConnection extends XMPPTCPConnection {
             Form answerForm = searchForm.createAnswerForm();
             answerForm.setAnswer("Username", true);
             answerForm.setAnswer("search", userName);
-            ReportedData data = usm.getSearchResults(answerForm, JidCreate.domainBareFrom("search." + getConnection().getXMPPServiceDomain()));
+            ReportedData data = usm.getSearchResults(answerForm, JidCreate.domainBareFrom("search." + getConnection(context).getXMPPServiceDomain()));
             List<ReportedData.Row> rowList = data.getRows();
 
             //此处返回的字段名如下所示，之前的版本可能有所变化，使用的时候需要注意
@@ -630,14 +638,14 @@ public class XmppConnection extends XMPPTCPConnection {
      *
      * @param status
      */
-    public void changeStateMessage(String status) {
-        if (getConnection() == null) {
+    public void changeStateMessage(Context context,String status) {
+        if (getConnection(context) == null) {
             return;
         }
         Presence presence = new Presence(Presence.Type.available);
         presence.setStatus(status);
         try {
-            getConnection().sendStanza(presence);
+            getConnection(context).sendStanza(presence);
         } catch (SmackException.NotConnectedException | InterruptedException e) {
             e.printStackTrace();
         }
@@ -648,8 +656,8 @@ public class XmppConnection extends XMPPTCPConnection {
      *
      * @return true成功
      */
-    public boolean changePassword(String pwd) {
-        if (getConnection() == null) {
+    public boolean changePassword(Context context,String pwd) {
+        if (getConnection(context) == null) {
             return false;
         }
         try {
@@ -670,22 +678,22 @@ public class XmppConnection extends XMPPTCPConnection {
      * 获取所有聊天室
      */
     public void getAllRooms(Context context) {
-        if (getConnection() == null) {
+        if (getConnection(context) == null) {
             return;
         }
         Collection<HostedRoom> hostrooms;
         List<ChatRoom> chatRooms = new ArrayList<>();
         LoginUser loginUser = Util.getLoginInfo(context);
         try {
-            hostrooms = MultiUserChatManager.getInstanceFor(getConnection()).getHostedRooms(
-                    JidCreate.domainBareFrom("conference." + getConnection().getXMPPServiceDomain()));
+            hostrooms = MultiUserChatManager.getInstanceFor(getConnection(context)).getHostedRooms(
+                    JidCreate.domainBareFrom("conference." + getConnection(context).getXMPPServiceDomain()));
 
             for (HostedRoom entry : hostrooms) {
                 ChatRoom chatRoom = new ChatRoom();
                 chatRoom.setJid(entry.getJid().toString());
                 chatRoom.setRoomName(entry.getName());
                 chatRooms.add(chatRoom);
-                joinMultiUserChat(loginUser.getUserName(),entry.getName());
+                joinMultiUserChat(context,loginUser.getUserName(),entry.getName());
 
             }
             if (chatRooms != null && chatRooms.size() > 0) {
@@ -705,12 +713,12 @@ public class XmppConnection extends XMPPTCPConnection {
      */
     public boolean createChatRoom(Context context, String roomName, List<ChatUser> users) {
         try {//组装群聊jid,这里需要注意一下,群jid的格式就是  群名称@conference.openfire服务器名称
-            String jid = roomName + "@conference." + getConnection().getXMPPServiceDomain();
+            String jid = roomName + "@conference." + getConnection(context).getXMPPServiceDomain();
             EntityBareJid groupJid = null;
 
             groupJid = JidCreate.entityBareFrom(jid);
 
-            MultiUserChatManager manager = MultiUserChatManager.getInstanceFor(getInstance());
+            MultiUserChatManager manager = MultiUserChatManager.getInstanceFor(getInstance(context));
             MultiUserChat muc = manager.getMultiUserChat(groupJid);
             muc.create(Resourcepart.from(roomName));
             // 获得聊天室的配置表单
@@ -770,15 +778,15 @@ public class XmppConnection extends XMPPTCPConnection {
      * @param user      昵称
      * @param roomsName 会议室名
      */
-    public MultiUserChat joinMultiUserChat(String user, String roomsName) {
-        if (getConnection() == null) {
+    public MultiUserChat joinMultiUserChat(Context context,String user, String roomsName) {
+        if (getConnection(context) == null) {
             return null;
         }
         try {
             //获取群管理对象
             MultiUserChatManager multiUserChatManager = MultiUserChatManager.getInstanceFor(connection);
             //通过群管理对象获取该群房间对象
-            MultiUserChat multiUserChat = multiUserChatManager.getMultiUserChat(JidCreate.entityBareFrom(roomsName + "@conference." + getConnection().getXMPPServiceDomain()));
+            MultiUserChat multiUserChat = multiUserChatManager.getMultiUserChat(JidCreate.entityBareFrom(roomsName + "@conference." + getConnection(context).getXMPPServiceDomain()));
 
             MucEnterConfiguration.Builder builder = multiUserChat.getEnterConfigurationBuilder(Resourcepart.from(user));
             //只获取最后0条历史记录
@@ -814,8 +822,8 @@ public class XmppConnection extends XMPPTCPConnection {
      *
      * @param muc
      */
-    public List<String> findMulitUser(MultiUserChat muc) {
-        if (getConnection() == null) {
+    public List<String> findMulitUser(Context context,MultiUserChat muc) {
+        if (getConnection(context) == null) {
             return null;
         }
         List<String> listUser = new ArrayList<>();
@@ -835,9 +843,9 @@ public class XmppConnection extends XMPPTCPConnection {
      * @param JID JID
      * @return Chat
      */
-    public Chat getFriendChat(String JID) {
+    public Chat getFriendChat(Context context,String JID) {
         try {
-            return ChatManager.getInstanceFor(XmppConnection.getConnection())
+            return ChatManager.getInstanceFor(XmppConnection.getConnection(context))
                     .chatWith(JidCreate.entityBareFrom(JID));
         } catch (XmppStringprepException e) {
             e.printStackTrace();
@@ -882,12 +890,12 @@ public class XmppConnection extends XMPPTCPConnection {
      * @param user
      * @param filePath
      */
-    public void sendFile(String user, String filePath) {
-        if (getConnection() == null) {
+    public void sendFile(Context context,String user, String filePath) {
+        if (getConnection(context) == null) {
             return;
         }
         // 创建文件传输管理器
-        FileTransferManager manager = FileTransferManager.getInstanceFor(getConnection());
+        FileTransferManager manager = FileTransferManager.getInstanceFor(getConnection(context));
 
         // 创建输出的文件传输
         OutgoingFileTransfer transfer = null;
@@ -913,12 +921,12 @@ public class XmppConnection extends XMPPTCPConnection {
      * @return
      */
     public void getOfflineMessage(Context context) {
-        if (getConnection() == null) {
+        if (getConnection(context) == null) {
             return;
         }
         try {
             dbManager = new DBManager(context);
-            OfflineMessageManager offlineManager = new OfflineMessageManager(getConnection());
+            OfflineMessageManager offlineManager = new OfflineMessageManager(getConnection(context));
             List<Message> messageList = offlineManager.getMessages();
             String username = Util.getLoginInfo(context).getUserName();
             List<ChatMessage> chatMessages = new ArrayList<>();
@@ -931,7 +939,7 @@ public class XmppConnection extends XMPPTCPConnection {
             if (chatMessages != null && chatMessages.size() > 0) {
                 dbManager.addChatMessageData(chatMessages);
             }
-            setPresence(0);
+            setPresence(context,0);
             offlineManager.deleteMessages();
         } catch (Exception e) {
             e.printStackTrace();
@@ -964,14 +972,14 @@ public class XmppConnection extends XMPPTCPConnection {
      *
      * @param applyJid
      */
-    public void acceptFriendApply(String applyJid) {
+    public void acceptFriendApply(Context context,String applyJid) {
         try {
-            if (getConnection() == null) {
+            if (getConnection(context) == null) {
                 return;
             }
             Presence presenceRes = new Presence(Presence.Type.subscribed);
             presenceRes.setTo(applyJid);
-            getConnection().sendStanza(presenceRes);
+            getConnection(context).sendStanza(presenceRes);
         } catch (SmackException.NotConnectedException | InterruptedException e) {
             e.printStackTrace();
         }
@@ -982,14 +990,14 @@ public class XmppConnection extends XMPPTCPConnection {
      *
      * @param applyJid
      */
-    public void refuseFriendApply(String applyJid) {
+    public void refuseFriendApply(Context context,String applyJid) {
         try {
-            if (getConnection() == null) {
+            if (getConnection(context) == null) {
                 return;
             }
             Presence presenceRes = new Presence(Presence.Type.unsubscribe);
             presenceRes.setTo(applyJid);
-            getConnection().sendStanza(presenceRes);
+            getConnection(context).sendStanza(presenceRes);
         } catch (SmackException.NotConnectedException | InterruptedException e) {
             e.printStackTrace();
         }
@@ -1003,15 +1011,15 @@ public class XmppConnection extends XMPPTCPConnection {
      * @param changeId    被修改者id
      * @return
      */
-    public boolean modifyNickName(String newNickName, String loginId, String changeId) {
+    public boolean modifyNickName(Context context,String newNickName, String loginId, String changeId) {
         try {
-            if (getConnection() == null) {
+            if (getConnection(context) == null) {
                 return false;
             }
             NickNameIQ nickNameIQ = new NickNameIQ("query", "jabber:iq:roster", changeId, newNickName);
             nickNameIQ.setType(IQ.Type.set);
             nickNameIQ.setStanzaId(loginId + "@xie-pc/" + changeId);
-            getConnection().sendStanza(nickNameIQ);
+            getConnection(context).sendStanza(nickNameIQ);
             return true;
         } catch (SmackException.NotConnectedException | InterruptedException e) {
             e.printStackTrace();
@@ -1020,7 +1028,42 @@ public class XmppConnection extends XMPPTCPConnection {
 
     }
 
+    public void logOut(final Context mContext) {
+        //这里需要先将登陆状态改变为“离线”，再断开连接，不然在后台还是上线的状态
+        Presence presence = new Presence(Presence.Type.unavailable);
+        try {
+            connection.sendStanza(presence);
+            if (connection.isConnected()) {
+                connection.disconnect();
+            }
+            connection.removeConnectionListener(connectionListener);
+            connection = null;
+            Intent intent1 = new Intent(mContext, ChatService.class);
+            mContext.startService(intent1);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
+    /**
+     * 连接openfire
+     */
+    public void connectOpenfire(Context context){
+        if (connection==null){
+            connection = getInstance(context);
+        }
+        try {
+            connection.connect();
+        } catch (SmackException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (XMPPException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 
 
 }

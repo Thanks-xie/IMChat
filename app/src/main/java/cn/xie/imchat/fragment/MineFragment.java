@@ -85,8 +85,8 @@ public class MineFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Util.cleanLoginData(context);
-                XmppConnection.getInstance().setPresence(5);
-                XmppConnection.getInstance().closeConnection();
+                XmppConnection.getInstance(context).setPresence(context,5);
+                XmppConnection.getInstance(context).closeConnection();
                 Intent intent = new Intent(context, LoginActivity.class);
                 startActivity(intent);
                 getActivity().finish();

@@ -75,7 +75,7 @@ public class FriendDetailActivity extends BaseActivity {
         deleteFriend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                boolean result = XmppConnection.getInstance().removeUser(chatUser.getUserName());
+                boolean result = XmppConnection.getInstance(context).removeUser(context,chatUser.getUserName());
                 if (result){
                     Toast.makeText(context,"删除成功",Toast.LENGTH_SHORT).show();
                     dbManager.deleteData("user","jid=?", new String[]{chatUser.getJid()});

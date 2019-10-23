@@ -73,7 +73,7 @@ public class ContractsAdapter extends RecyclerView.Adapter<ContractsAdapter.View
             @Override
             public void onClick(View v) {
                 if (Util.isNotFastClick()){
-                    boolean result = XmppConnection.getInstance().removeUser(chatUser.getUserName());
+                    boolean result = XmppConnection.getInstance(mContext).removeUser(mContext,chatUser.getUserName());
                     if (result){
                         Toast.makeText(mContext,"删除成功",Toast.LENGTH_SHORT).show();
                         dbManager.deleteData("user","jid=?", new String[]{chatUser.getJid()});
@@ -128,7 +128,7 @@ public class ContractsAdapter extends RecyclerView.Adapter<ContractsAdapter.View
     private Handler showOnline = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            int result = XmppConnection.getInstance().IsUserOnLine(chatUserList.get(msg.what).getJid());
+            int result = XmppConnection.getInstance(mContext).IsUserOnLine(chatUserList.get(msg.what).getJid());
             ViewHolder viewHolder = (ViewHolder) msg.obj;
             if (1==result){
                 viewHolder.online.setText(R.string.online_text);
@@ -144,7 +144,7 @@ public class ContractsAdapter extends RecyclerView.Adapter<ContractsAdapter.View
     private Handler showHeadImage = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            Drawable drawable = XmppConnection.getInstance().getUserImage(chatUserList.get(msg.what).getJid());
+            Drawable drawable = XmppConnection.getInstance(mContext).getUserImage(mContext,chatUserList.get(msg.what).getJid());
             ViewHolder viewHolder = (ViewHolder) msg.obj;
             Log.e("xjbo","drawable："+drawable);
             /*if (drawable!=null){

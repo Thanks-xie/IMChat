@@ -72,11 +72,11 @@ public class ChatActivity extends BaseActivity {
         if (type.equals("chat")){
             //创建个人聊天窗口
             String sendJid = sendName + "@xie-pc";
-            chat = XmppConnection.getInstance().getFriendChat(sendJid);
+            chat = XmppConnection.getInstance(context).getFriendChat(context,sendJid);
         }else {
             //创建聊天室窗口
             String roomJid = sendName + "@conference.xie-pc";
-            muc = XmppConnection.getInstance().joinMultiUserChat(loginUser.getUserName(),sendName);
+            muc = XmppConnection.getInstance(context).joinMultiUserChat(context,loginUser.getUserName(),sendName);
         }
 
         userName = Util.getLoginInfo(context).getUserName();
@@ -183,7 +183,7 @@ public class ChatActivity extends BaseActivity {
                     Toast.makeText(context,"发送内容不能为空",Toast.LENGTH_SHORT).show();
                     return;
                 }
-                if (!(XmppConnection.getInstance().checkConnection()&&XmppConnection.getInstance().checkAuthenticated())){
+                if (!(XmppConnection.getInstance(context).checkConnection()&&XmppConnection.getInstance(context).checkAuthenticated())){
                     Toast.makeText(context,"对不起，你暂处于离线状态，不能发送消息",Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -238,7 +238,7 @@ public class ChatActivity extends BaseActivity {
                             }
                         };
                     }
-                    XmppConnection.getInstance().addAsyncStanzaListener(packetListener, StanzaTypeFilter.MESSAGE);
+                    XmppConnection.getInstance(context).addAsyncStanzaListener(packetListener, StanzaTypeFilter.MESSAGE);
                 }
             });
             thread.start();
@@ -283,7 +283,7 @@ public class ChatActivity extends BaseActivity {
         //message.addExtension(addMessageInfo);
 
         //发送消息
-        XmppConnection.getInstance().sendMessage(chat, muc, message);
+        XmppConnection.getInstance(context).sendMessage(chat, muc, message);
         List<ChatMessage> chatMessages = new ArrayList<>();
         if (type.equals("groupchat")){
             ChatMessage chatMessage = new ChatMessage(userName, sendName, inputMsg, "OUT", myMessage.sendtime, null, type,userName);
