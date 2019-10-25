@@ -71,7 +71,7 @@ import cn.xie.imchat.utils.Util;
 public class XmppConnection extends XMPPTCPConnection {
     private static XmppConnection connection = null;
     private static int SERVER_PORT = 5222;
-    private static String SERVER_HOST = "127.0.0.1";
+    private static String SERVER_HOST = "192.168.0.130";
     private static String SERVER_NAME = "xie-pc";
     private static ConnectionListener connectionListener;
     private DBManager dbManager;
@@ -1030,9 +1030,8 @@ public class XmppConnection extends XMPPTCPConnection {
 
     public void logOut(final Context mContext) {
         //这里需要先将登陆状态改变为“离线”，再断开连接，不然在后台还是上线的状态
-        Presence presence = new Presence(Presence.Type.unavailable);
         try {
-            connection.sendStanza(presence);
+            setPresence(mContext,5);
             if (connection.isConnected()) {
                 connection.disconnect();
             }

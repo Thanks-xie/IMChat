@@ -54,7 +54,7 @@ public class ChatService extends Service {
         context = this;
         dbManager = new DBManager(context);
         judgeLoginXMPP();
-        createThreadPool();
+        //createThreadPool();
         return START_STICKY;
     }
 

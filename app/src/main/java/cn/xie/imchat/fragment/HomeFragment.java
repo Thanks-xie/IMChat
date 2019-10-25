@@ -77,7 +77,8 @@ public class HomeFragment extends Fragment {
         add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showAddPopupWindow();
+                //showAddPopupWindow();
+                XmppConnection.getConnection(context).logOut(context);
 
             }
         });
